@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vital4living.com/sitemap.xml
