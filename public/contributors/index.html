@@ -19,7 +19,8 @@
     .disclosure-card__title { display:flex; align-items:center; gap: var(--space-2); font-weight: 700; font-size: var(--text-lg); margin-bottom: var(--space-3); }
     .disclosure-card p { font-size: var(--text-sm); color: var(--color-text-muted, #7A7974); margin-top: var(--space-3); }
     .person--detail { display:grid; grid-template-columns: auto 1fr; gap: var(--space-5); align-items:start; padding: var(--space-6) 0; border-bottom: 1px solid var(--color-border, #D4D1CA); }
-    .person__avatar { width:64px; height:64px; border-radius: var(--radius-full); display:flex; align-items:center; justify-content:center; font-size: var(--text-lg); font-weight:700; color:#F7F6F2; }
+    .person__avatar { width:80px; height:80px; border-radius: var(--radius-full); overflow:hidden; flex-shrink:0; }
+    .person__avatar img { width:100%; height:100%; object-fit:cover; display:block; }
     .acc-sierra { background:#0E5E66; }
     .acc-dex { background:#C2570C; }
     .acc-wren { background:#437A22; }
@@ -87,7 +88,7 @@
     <div class="people-list">
 
       <div class="person--detail">
-        <div class="person__avatar acc-sierra">SM</div>
+        <div class="person__avatar acc-sierra"><img src="../assets/img/personas/sierra.png" alt="Cartoon illustration of Sierra Marlowe, an AI persona" width="80" height="80" loading="lazy"></div>
         <div>
           <div class="person__name">Sierra Marlowe</div>
           <div class="person__role">Fit, Sizing &amp; Standards</div>
@@ -98,7 +99,7 @@
       </div>
 
       <div class="person--detail">
-        <div class="person__avatar acc-dex">DO</div>
+        <div class="person__avatar acc-dex"><img src="../assets/img/personas/dex.png" alt="Cartoon illustration of Dex Okafor, an AI persona" width="80" height="80" loading="lazy"></div>
         <div>
           <div class="person__name">Dex Okafor</div>
           <div class="person__role">Equipment Selection &amp; Geometry</div>
@@ -109,7 +110,7 @@
       </div>
 
       <div class="person--detail">
-        <div class="person__avatar acc-wren">WC</div>
+        <div class="person__avatar acc-wren"><img src="../assets/img/personas/wren.png" alt="Cartoon illustration of Wren Calloway, an AI persona" width="80" height="80" loading="lazy"></div>
         <div>
           <div class="person__name">Wren Calloway</div>
           <div class="person__role">Physiology, Comfort &amp; Conditions</div>
@@ -120,7 +121,7 @@
       </div>
 
       <div class="person--detail">
-        <div class="person__avatar acc-bo">BH</div>
+        <div class="person__avatar acc-bo"><img src="../assets/img/personas/bo.png" alt="Cartoon illustration of Bo Hartley, an AI persona" width="80" height="80" loading="lazy"></div>
         <div>
           <div class="person__name">Bo Hartley</div>
           <div class="person__role">Materials, Construction &amp; Durability</div>
@@ -131,7 +132,7 @@
       </div>
 
       <div class="person--detail">
-        <div class="person__avatar acc-niko">NR</div>
+        <div class="person__avatar acc-niko"><img src="../assets/img/personas/niko.png" alt="Cartoon illustration of Niko Reyes, an AI persona" width="80" height="80" loading="lazy"></div>
         <div>
           <div class="person__name">Niko Reyes</div>
           <div class="person__role">Field Setup &amp; Maintenance</div>

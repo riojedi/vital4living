@@ -593,3 +593,5 @@ select {
 /* Byline (contributor persona) */
 .byline { font-size: var(--text-sm); color: var(--color-text-muted); margin-top: var(--space-2); }
 .byline a { font-weight: 600; }
+/* Byline avatar */
+.byline__avatar { width:24px; height:24px; border-radius:50%; vertical-align:-5px; margin-right:6px; border:1px solid var(--color-border, #D4D1CA); }
