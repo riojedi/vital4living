@@ -6,6 +6,13 @@
   if (!form || !results) return;
 
   var inputs = {};
+  // shell-room offset (cm) + heel-gap target by fit preference
+  var fitOffset = { performance: 1.0, balanced: 1.5, comfort: 2.0 };
+  var fitGap = {
+    performance: 'Performance fit: target ~10–15 mm heel gap (snug, responsive).',
+    balanced: 'Balanced fit: target ~15 mm heel gap.',
+    comfort: 'Comfort fit: target ~15–20 mm heel gap (roomier, recreational).',
+  };
   // segmented button groups
   document.querySelectorAll('[data-seg]').forEach(function (group) {
     var key = group.getAttribute('data-seg');
@@ -54,7 +61,7 @@
     if (method === 'footlength') {
       var cm = parseFloat(document.getElementById('foot-length').value);
       if (!cm || cm < 18 || cm > 36) return null;
-      return roundHalf(cm + 1.0); // ~1 cm of shell room beyond foot length
+      return roundHalf(cm + (fitOffset[inputs.fitpref] || 1.5)); // shell room beyond foot length, per fit preference
     }
     var m = parseFloat(document.getElementById('mondo-size').value);
     if (!m || m < 18 || m > 36) return null;
@@ -171,7 +178,7 @@
     results.hidden = false;
     results.innerHTML =
       '<div class="grid grid--2">' +
-      resultCard('Mondo (shell) size', mondo.toFixed(1) + ' cm', 'Shell length. Aim for ~1–2 cm of space behind your heel in a shell fit (liner out).') +
+      resultCard('Mondo (shell) size', mondo.toFixed(1) + ' cm', 'Shell length. Aim for ~1–2 cm of space behind your heel in a shell fit (liner out).' + (form.querySelector('input[name="sizing"]:checked').value === 'footlength' ? ' ' + (fitGap[inputs.fitpref] || fitGap.balanced) : '')) +
       resultCard('US size', 'Men\u2019s ' + usFromMondo(mondo, 'm') + ' / Women\u2019s ' + usFromMondo(mondo, 'w'), 'Approximate — mondo is the sizing standard, US is a convenience.') +
       '</div>' +
       '<div class="grid grid--2">' +
