@@ -28,6 +28,12 @@
   --color-accent-hover: #a14708;
   --color-accent-highlight: #f3e2d2;
 
+  /* Links — glacier teal, never browser-default blue */
+  --color-link: #0b6670;
+  --color-link-hover: #074c54;
+  --color-link-visited: #105b62;
+  --color-link-underline: color-mix(in oklab, var(--color-link) 45%, transparent);
+
   --color-success: #3f7a2c;
   --color-warning: #9a5a16;
 
@@ -93,6 +99,13 @@
   --color-accent: #e8943a;
   --color-accent-hover: #f3a85c;
   --color-accent-highlight: #3a2e1e;
+
+  /* Links — muted teal, readable on dark, never saturated blue */
+  --color-link: #79b8b9;
+  --color-link-hover: #a8d3d1;
+  --color-link-visited: #88b9c0;
+  --color-link-underline: color-mix(in oklab, var(--color-link) 55%, transparent);
+
   --color-success: #6daa45;
   --color-warning: #c98a4a;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -191,6 +204,20 @@ select {
   transition: color var(--transition-interactive), background var(--transition-interactive),
     border-color var(--transition-interactive), box-shadow var(--transition-interactive);
 }
+a {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-decoration-color: var(--color-link-underline);
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 0.08em;
+}
+a:hover {
+  color: var(--color-link-hover);
+  text-decoration-color: currentColor;
+}
+a:visited {
+  color: var(--color-link-visited);
+}
 .sr-only {
   position: absolute;
   width: 1px;
@@ -212,6 +239,12 @@ select {
 }
 .section {
   padding-block: clamp(var(--space-10), 5vw, var(--space-20));
+}
+.section__title {
+  font-size: var(--text-xl);
+  margin-block-end: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--color-primary-highlight);
 }
 
 /* Header */
@@ -369,6 +402,10 @@ select {
   padding: var(--space-6);
   box-shadow: var(--shadow-sm);
 }
+/* CTA / affiliate callout — amber accent rail */
+.callout {
+  border-left: 3px solid var(--color-accent);
+}
 .grid {
   display: grid;
   gap: var(--space-5);
@@ -400,6 +437,7 @@ select {
 }
 .breadcrumb a {
   color: var(--color-text-faint);
+  text-decoration: none;
 }
 .breadcrumb a:hover {
   color: var(--color-text-muted);
@@ -563,6 +601,7 @@ select {
 .vcard:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
 }
 .vcard__tag {
   font-size: var(--text-xs);
@@ -592,6 +631,6 @@ select {
 }
 /* Byline (contributor persona) */
 .byline { font-size: var(--text-sm); color: var(--color-text-muted); margin-top: var(--space-2); }
-.byline a { font-weight: 600; }
+.byline a { font-weight: 600; text-decoration: none; }
 /* Byline avatar */
 .byline__avatar { width:24px; height:24px; border-radius:50%; vertical-align:-5px; margin-right:6px; border:1px solid var(--color-border, #D4D1CA); }
