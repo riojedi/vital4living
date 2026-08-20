@@ -6,7 +6,7 @@ Static site, no build step. Deployed to **vital4living.com** via Cloudflare Page
 
 - `index.html` — multi-vertical home
 - `snow/index.html` — snowsports vertical landing
-- `snow/boots/boot-fit-engine.html` — the flagship Boot Fit Engine calculator
+- `snow/boots/boot-fit-engine.html` — the flagship Boot Fit Calculator
 - `about/index.html` — author bio + editorial policy (E-E-A-T)
 - `affiliate-disclosure/index.html` — affiliate disclosure
 - `assets/css/style.css` — design system (alpine palette, Cabinet Grotesk + Satoshi)

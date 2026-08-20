@@ -1,4 +1,4 @@
-// Vital4 Boot Fit Engine — educational boot-sizing + fit guidance
+// Vital4 Boot Fit Calculator — educational boot-sizing + fit guidance
 // Logic reflects general ski-boot fitting practice; not a substitute for a certified bootfitter.
 (function () {
   var form = document.getElementById('bff');
