@@ -367,6 +367,8 @@ a:visited {
 }
 
 /* Buttons */
+/* Accessible CTA: white text on a darkened rust (light mode) and dark text on
+   the light orange accent (dark mode) — both clear WCAG AA (>=4.5:1). */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -380,11 +382,18 @@ a:visited {
   border: 1px solid transparent;
 }
 .btn--accent {
-  background: var(--color-accent);
+  background: #b3530b;
   color: #fff;
 }
 .btn--accent:hover {
-  background: var(--color-accent-hover);
+  background: #9a4708;
+}
+[data-theme='dark'] .btn--accent {
+  background: #e8943a;
+  color: #1a1208;
+}
+[data-theme='dark'] .btn--accent:hover {
+  background: #f0a046;
 }
 .btn--ghost {
   border-color: var(--color-border);
