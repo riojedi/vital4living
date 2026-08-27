@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ski Selector — Alpine Ski Length Calculator by Height &amp; Weight | Vital4Living</title>
+    <meta
+      name="description"
+      content="Free alpine ski length calculator (ski selector). Enter height, weight, ability, and terrain to get recommended ski length, waist width, and turn radius — from a former ski-shop equipment buyer."
+    />
+    <link rel="canonical" href="https://vital4living.com/snow/skis/ski-selector" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ski Selector — Alpine Ski Length Calculator by Height &amp; Weight" />
+    <meta property="og:description" content="Get recommended alpine ski length, waist width, and turn radius from height, weight, ability, and terrain." />
+    <meta property="og:url" content="https://vital4living.com/snow/skis/ski-selector" />
+    <meta property="og:site_name" content="Vital4Living" />
+    <meta property="og:image" content="https://vital4living.com/assets/img/social-share.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Vital4Living — outdoor gear spec-engines &amp; buyer guides" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Ski Selector — Alpine Ski Length Calculator by Height &amp; Weight" />
+    <meta name="twitter:description" content="Get recommended alpine ski length, waist width, and turn radius from height, weight, ability, and terrain." />
+    <meta name="twitter:image" content="https://vital4living.com/assets/img/social-share.png" />
+    <link rel="icon" href="../../assets/img/logo.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../../assets/css/style.css?v=20260820" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Vital4 Ski Length Calculator",
+      "applicationCategory": "SportsApplication",
+      "operatingSystem": "Web",
+      "description": "Alpine ski length calculator (ski selector) that computes recommended ski length, waist width, and turn radius range from skier height, weight, ability, and terrain.",
+      "url": "https://vital4living.com/snow/skis/ski-selector",
+      "isAccessibleForFree": true,
+      "author": { "@type": "Person", "name": "Dex Okafor", "jobTitle": "Equipment Selection &amp; Geometry" }
+    }
+    </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://vital4living.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Snowsports", "item": "https://vital4living.com/snow/" },
+    { "@type": "ListItem", "position": 3, "name": "Alpine Skiing", "item": "https://vital4living.com/snow/alpine-skiing/" },
+    { "@type": "ListItem", "position": 4, "name": "Ski Selector — Alpine Ski Length Calculator", "item": "https://vital4living.com/snow/skis/ski-selector" }
+  ]
+}
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "How is ski length calculated?", "acceptedAnswer": { "@type": "Answer", "text": "This calculator starts from a chin-to-head rule: a ski stood on end should reach between the chin (about 85% of standing height) and the top of the head (100%), depending on ability. It then adds a terrain offset and a weight adjustment to land on a recommended length, shown as a ±5 cm range." } },
+        { "@type": "Question", "name": "Should I size up or down for skis?", "acceptedAnswer": { "@type": "Answer", "text": "Beginners and lighter skiers generally size down (shorter = easier turning), while experts, heavier skiers, and powder skiers size up for stability and flotation. The calculator applies both effects automatically based on your inputs." } },
+        { "@type": "Question", "name": "What waist width do I need?", "acceptedAnswer": { "@type": "Answer", "text": "Waist width (underfoot) is set mainly by terrain: roughly 70–85 mm for frontside/piste, 85–105 mm for all-mountain, and 110–125 mm for powder. Wider skis float better in soft snow; narrower skis carve faster on hardpack." } },
+        { "@type": "Question", "name": "What is turn radius on a ski?", "acceptedAnswer": { "@type": "Answer", "text": "Turn radius is the natural arc a ski wants to make, set by its sidecut (tip, waist, and tail widths and contact length). This calculator shows the typical radius range for your terrain class; the exact number for any specific ski is printed on the ski." } }
+      ]
+    }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container site-header__inner">
+        <a class="brand" href="../../" aria-label="Vital4Living home">
+          <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 26 L13 8 L19 18 L23 11 L29 26 Z" fill="currentColor"/><circle cx="24" cy="7" r="2.6" fill="currentColor"/></svg>
+          Vital4Living
+        </a>
+        <nav class="nav" aria-label="Primary">
+          <ul class="nav__links" role="list">
+            <li><a href="../">Snowsports</a></li>
+            <li><a href="../../contributors/">Contributors</a></li>
+            <li><a href="../../about/">About</a></li>
+            <li><a href="../../affiliate-disclosure/">Affiliate disclosure</a></li>
+          </ul>
+          <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="page-head">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../../">Home</a> &rsaquo; <a href="../">Snowsports</a> &rsaquo; <a href="./">Skis</a> &rsaquo; Ski selector</nav>
+        <span class="eyebrow">Snow › Skis</span>
+        <h1>Ski selector</h1>
+        <p class="byline"><img src="../../assets/img/personas/dex.png" alt="" width="24" height="24" class="byline__avatar">By <a href="../../contributors/">Dex Okafor</a> &middot; Equipment Selection &amp; Geometry</p>
+
+        <p>Alpine ski length isn't a guess. Enter your height, weight, ability, and terrain and the calculator blends four manufacturer sizing methods into one recommendation — ski length, waist width, and turn-radius range — with the formula shown plainly so you can sanity-check it before you buy.</p>
+      </div>
+
+      <div class="card disclaimer" style="margin-top:var(--space-4)">
+        <strong>Educational tool only.</strong> This calculator gives a general sizing estimate from published manufacturer guidelines — it is not a substitute for a professional fitting. Ski choice depends on flex, rocker profile, boot sole length, binding compatibility, and your personal style. A certified ski shop or bootfitter makes the final recommendation; always have bindings mounted and release-tested by a certified technician before skiing.
+      </div>
+
+      <nav class="toc card" aria-label="On this page">
+        <span class="result-card__label">On this page</span>
+        <ul style="margin-top:var(--space-3);padding-left:var(--space-5)">
+          <li><a href="#calculator">Ski length calculator</a></li>
+          <li><a href="#how">How the formula works</a></li>
+          <li><a href="#keep-reading">Keep reading</a></li>
+        </ul>
+      </nav>
+
+      <section class="calc" id="calculator">
+        <form class="card" id="slc" novalidate>
+          <div class="field">
+            <label for="height">Height (cm)</label>
+            <input type="number" id="height" min="120" max="210" step="1" inputmode="numeric" placeholder="e.g. 178" required />
+            <span class="hint">Standing height, without boots.</span>
+          </div>
+
+          <div class="field">
+            <label for="weight">Weight (kg)</label>
+            <input type="number" id="weight" min="30" max="130" step="1" inputmode="numeric" placeholder="e.g. 78" required />
+            <span class="hint">Total body weight, unclothed.</span>
+          </div>
+
+          <div class="field">
+            <label>Ability</label>
+            <div class="seg" data-seg="ability" role="group" aria-label="Ability">
+              <button type="button" data-value="beginner" aria-pressed="false">Beginner</button>
+              <button type="button" data-value="intermediate" aria-pressed="true">Intermediate</button>
+              <button type="button" data-value="advanced" aria-pressed="false">Advanced</button>
+              <button type="button" data-value="expert" aria-pressed="false">Expert</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Primary terrain</label>
+            <div class="seg" data-seg="terrain" role="group" aria-label="Terrain">
+              <button type="button" data-value="frontside" aria-pressed="false">Frontside</button>
+              <button type="button" data-value="allmountain" aria-pressed="true">All-mountain</button>
+              <button type="button" data-value="powder" aria-pressed="false">Powder</button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn--accent calc__submit">Compute my ski length</button>
+        </form>
+
+        <div>
+          <div class="results" id="results" hidden aria-live="polite"></div>
+          <div class="card" style="margin-top:var(--space-5)" id="how">
+            <h2 style="font-size:var(--text-base)">How this works</h2>
+            <p class="result-card__note" style="margin-top:var(--space-2)">The foundational rule — stated the same way by Völkl, Blizzard, and Rossignol — is that a ski stood on end should reach somewhere between your chin and the top of your head (<a href="https://volkl.com/en-us/support/ski-sizing-guide">Völkl</a>, <a href="https://www.blizzard-tecnica.com/assets/documents/blizzard/blizzard-ski-sizer_EN.pdf">Blizzard</a>). This calculator sets a base length from that chin-to-head rule using an ability factor (Beginner 0.85 / Intermediate 0.90 / Advanced 0.95 / Expert 1.00), then applies a terrain offset drawn from Rossignol's published expert-level numbers (Frontside −5 cm, All-mountain 0, Powder +7 cm) (<a href="https://summitcollective.co.nz/pages/size-guide-rossignol">Rossignol via Summit Collective</a>), and a weight adjustment of ±1 cm per 5 kg off the Broca reference weight (height − 100), capped at ±3 cm (<a href="https://sport-calculator.com/calculators/winter-sports/ski-length-calculator">Sport Calculator</a>, <a href="https://volkl.com/en-us/support/ski-sizing-guide">Völkl</a>). Waist width is set by terrain class from the consensus ranges at <a href="https://www.switchbacktravel.com/info/guide-ski-waist-width">Switchback Travel</a> and <a href="https://www.rei.com/learn/expert-advice/downhill-skis.html">REI</a>; turn radius is shown as the typical range for your class (<a href="https://www.evo.com/blogs/guides/how-to-choose-skis-size-chart">evo</a>). Adult, all-mountain/alpine skis only — not junior, nordic, touring, or FIS-regulated race skis.</p>
+          </div>
+          <nav class="card" style="margin-top:var(--space-5)" aria-label="Related guides" id="keep-reading">
+            <h2 style="font-size:var(--text-base)">Keep reading</h2>
+            <ul style="margin-top:var(--space-3);padding-left:var(--space-5)">
+              <li><a href="./frontside-allmountain-powder-skis">Frontside vs all-mountain vs powder skis</a></li>
+              <li><a href="./ski-waist-width">How a shop buyer thinks about ski waist width</a></li>
+              <li><a href="./used-ski-checklist">Used ski checklist</a></li>
+            </ul>
+          </nav>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container site-footer__inner">
+        <p>&copy; 2026 Vital4Living. <a href="../../affiliate-disclosure/">Affiliate disclosure</a> &middot; <a href="https://vital4living.com/privacy-policy/">Privacy</a> &middot; <a href="https://vital4living.com/terms/">Terms</a></p>
+        <p>Built by a former ski-shop equipment buyer.</p>
+      </div>
+    </footer>
+    <script src="../../assets/js/theme.js"></script>
+    <script>
+    // Vital4 Ski Length Calculator — educational sizing estimate; not a substitute for a shop fitting.
+    (function () {
+      var form = document.getElementById('slc');
+      var results = document.getElementById('results');
+      if (!form || !results) return;
+
+      var inputs = { ability: 'intermediate', terrain: 'allmountain' };
+      document.querySelectorAll('[data-seg]').forEach(function (group) {
+        var key = group.getAttribute('data-seg');
+        group.querySelectorAll('button').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            group.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+            btn.setAttribute('aria-pressed', 'true');
+            inputs[key] = btn.getAttribute('data-value');
+          });
+        });
+      });
+
+      form.addEventListener('submit', function (e) { e.preventDefault(); compute(); });
+
+      var abilityFactor = { beginner: 0.85, intermediate: 0.90, advanced: 0.95, expert: 1.00 };
+      var terrainOffset = { frontside: -5, allmountain: 0, powder: 7 };
+      var waistRange = { frontside: [70, 85], allmountain: [85, 105], powder: [110, 125] };
+      var radiusRange = { frontside: '11–16 m (short / carving)', allmountain: '16–22 m (medium / all-mountain)', powder: '22–30 m+ (long / big-mountain)' };
+      var waistMid = { frontside: 78, allmountain: 95, powder: 118 };
+
+      function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
+
+      function compute() {
+        var h = parseFloat(document.getElementById('height').value);
+        var w = parseFloat(document.getElementById('weight').value);
+        if (!h || h < 120 || h > 210 || !w || w < 30 || w > 130) {
+          results.hidden = false;
+          results.innerHTML = '<div class="result-card"><p class="result-card__note">Enter a valid height (120–210 cm) and weight (30–130 kg) to compute a length.</p></div>';
+          return;
+        }
+        var ability = inputs.ability || 'intermediate';
+        var terrain = inputs.terrain || 'allmountain';
+        var base = h * abilityFactor[ability];
+        var offset = terrainOffset[terrain];
+        var refWeight = h - 100;
+        var delta = w - refWeight;
+        var weightAdj = clamp(delta / 5, -3, 3);
+        var rawLen = base + offset + weightAdj;
+        if (rawLen > 198) rawLen = 198;
+        var len = Math.round(rawLen);
+        var lo = clamp(len - 5, 0, 999);
+        var hi = Math.min(len + 5, 198);
+        var wr = waistRange[terrain];
+        var wm = waistMid[terrain];
+        var rr = radiusRange[terrain];
+
+        var notes = [];
+        if (h > 195 || w > 120) notes.push('At your size, length is capped near the longest production skis (~198 cm) — model availability is limited.');
+        if (delta < -15) notes.push('You are lighter than average for your height — consider a softer-flex ski at this length.');
+        if (ability === 'beginner') { if (terrain === 'powder') { notes.push('Powder skis are typically built for advanced/expert skiers; a beginner-friendly powder setup is uncommon.'); } }
+        var bmi = w / Math.pow(h / 100, 2);
+        if (bmi < 18 || bmi > 30) notes.push('Your height-to-weight ratio is outside the typical range — confirm length with a professional fitting.');
+
+        var noteHtml = notes.length ? '<ul style="margin-top:var(--space-3);padding-left:var(--space-5)">' + notes.map(function (n) { return '<li>' + n + '</li>'; }).join('') + '</ul>' : '';
+
+        results.hidden = false;
+        results.innerHTML =
+          '<div class="grid grid--2">' +
+          resultCard('Recommended ski length', len + ' cm', 'Target length. Shop in a ±5 cm range (about ' + lo + '–' + hi + ' cm), since skis are produced in 3–5 cm steps.') +
+          resultCard('Waist width', wm + ' mm', 'Underfoot width. Typical ' + wr[0] + '–' + wr[1] + ' mm for ' + terrain + ' terrain.') +
+          '</div>' +
+          '<div class="result-card">' +
+          '<div class="result-card__label">Turn radius (typical)</div>' +
+          '<div class="result-card__value">' + rr + '</div>' +
+          '<p class="result-card__note">Radius is set by the ski sidecut (tip / waist / tail and contact length), not directly by the skier. The exact number is printed on the specific ski you choose (<a href="https://skiradius.fis-ski.com/">FIS Ski Radius</a>, <a href="https://www.math.utah.edu/~eyre/rsbfaq/physics.html">Univ. of Utah</a>).</p>' +
+          '</div>' +
+          (noteHtml ? '<div class="result-card"><div class="result-card__label">Notes for your inputs</div>' + noteHtml + '</div>' : '') +
+          '<div class="disclaimer"><strong>Educational tool only.</strong> This calculator gives a general sizing estimate from published manufacturer guidelines — it is not a substitute for a professional fitting. Ski choice depends on flex, rocker profile, boot sole length, binding compatibility, and your personal style. A certified ski shop or bootfitter makes the final recommendation; always have bindings mounted and release-tested by a certified technician before skiing.</div>';
+      }
+
+      function resultCard(label, value, note) {
+        return '<div class="result-card"><div class="result-card__label">' + label + '</div><div class="result-card__value">' + value + '</div>' + (note ? '<p class="result-card__note">' + note + '</p>' : '') + '</div>';
+      }
+
+      document.querySelectorAll('[data-seg]').forEach(function (group) {
+        var first = group.querySelector('button[aria-pressed="true"]') || group.querySelector('button');
+        if (first) first.click();
+      });
+    })();
+    </script>
+  </body>
+</html>
