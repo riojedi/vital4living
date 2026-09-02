@@ -65,41 +65,28 @@ def get_ghost_jwt(admin_key):
     return jwt.encode(payload, secret_bytes, algorithm='HS256', headers=header)
 
 def extract_json(text):
-    """Robustly extracts a JSON block using brace counting to support nested structures."""
-    start_idx = text.find('{')
-    if start_idx == -1:
-        return None
+    """Robustly extracts a JSON block from stdout, ignoring any preambles or warnings."""
+    match = re.search(r'(\{.*\})', text, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group(1))
+        except json.JSONDecodeError:
+            pass
     
-    brace_count = 0
-    in_string = False
-    escape = False
-    
-    for i in range(start_idx, len(text)):
-        char = text[i]
-        
-        if escape:
-            escape = False
-            continue
-        
-        if char == '\\':
-            escape = True
-            continue
+    # Try finding any JSON block inside backticks
+    code_blocks = re.findall(r'```(?:json)?\s*(\{.*?\})\s*```', text, re.DOTALL)
+    for block in code_blocks:
+        try:
+            return json.loads(block)
+        except json.JSONDecodeError:
+            pass
             
-        if char == '"':
-            in_string = not in_string
-            continue
-            
-        if not in_string:
-            if char == '{':
-                brace_count += 1
-            elif char == '}':
-                brace_count -= 1
-                if brace_count == 0:
-                    json_str = text[start_idx:i+1]
-                    try:
-                        return json.loads(json_str)
-                    except json.JSONDecodeError:
-                        pass
+    # Try parsing the whole text
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+        
     return None
 
 def monetize_html(html_content, inventory):

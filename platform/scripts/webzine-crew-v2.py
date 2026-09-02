@@ -2,7 +2,7 @@
 """
 Vital4Living Multi-Agent CrewAI Writing, Editorial, and Monetization Engine
 Sprint 5/6 Expanded Implementation: Incorporating Advertising & Revenue Director Agent
-Version-agnostic string model definitions to prevent Pydantic validation errors.
+Restored ChatOpenAI Langchain objects to provide the full, uncompromised token budget.
 Optimized copywriting prompts to enforce strict editorial, magazine-style voice with narrative headers.
 """
 
@@ -10,6 +10,7 @@ import os
 import sys
 import json
 from crewai import Agent, Task, Crew, Process
+from langchain_openai import ChatOpenAI
 
 # ----------------------------------------------------------------------
 # 1. ROUTING & LLM INITIALIZATION (LiteLLM Compatible Gateway)
@@ -17,8 +18,17 @@ from crewai import Agent, Task, Crew, Process
 os.environ["OPENAI_API_BASE"] = os.getenv("OPENAI_API_BASE", "http://localhost:4000")
 os.environ["OPENAI_API_KEY"] = os.getenv("LITELLM_MASTER_KEY", "sk-litellm-master-key")
 
-premium_writer_llm = "premium-writer-llm"
-cheap_llm = "cheap-llm"
+# Premium Model (Claude 3.5 Sonnet) via LiteLLM for high-complexity persona drafting & strategy
+premium_writer_llm = ChatOpenAI(
+    model_name="claude-3-5-sonnet",
+    temperature=0.3
+)
+
+# Cost-Optimized Model (DeepSeek Chat) via LiteLLM for editing and structural JSON output
+cheap_llm = ChatOpenAI(
+    model_name="deepseek-chat",
+    temperature=0.1
+)
 
 # ----------------------------------------------------------------------
 # 2. INPUT PAYLOAD EXTRACTION
@@ -38,7 +48,7 @@ try:
         {
             "partner_name": "AvantLink - Salomon Outdoor",
             "monetization_type": "affiliate",
-            "targeting_keywords": ["Mondo sizing", "DIN setting", "Salomon", "ski boots"],
+            "targeting_keywords": ["Mondo sizing", "DIN setting", ["Salomon", "ski boots"]],
             "destination_url": "https://partner.avantlink.com/click?merchantId=123&websiteId=456&url=https://www.salomon.com"
         },
         {
@@ -121,7 +131,7 @@ managing_editor = Agent(
     and AI-generated style structures. You demand sharp, magazine-style narrative subheaders and complete, uncompromised accuracy.""",
     verbose=False,
     allow_delegation=False,
-    llm=premium_writer_llm
+    llm=cheap_llm  # DeepSeek Chat is perfect for structured editing and structural JSON compilation!
 )
 
 # ----------------------------------------------------------------------
