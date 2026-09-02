@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 """
 Vital4Living Multi-Agent CrewAI Writing, Editorial, and Monetization Engine
-Sprint 5/6 Expanded Implementation: Incorporating Advertising & Revenue Director Agent
-Restored ChatOpenAI Langchain objects to provide the full, uncompromised token budget.
-Optimized copywriting prompts to enforce strict editorial, magazine-style voice with narrative headers.
+Sprint 5/6 Upgraded Implementation: Incorporating Ultra-Premium Copywriting Prompts
+Uses version-agnostic string model definitions to completely bypass Pydantic validation errors on the VPS.
 """
 
 import os
 import sys
 import json
 from crewai import Agent, Task, Crew, Process
-from langchain_openai import ChatOpenAI
 
 # ----------------------------------------------------------------------
 # 1. ROUTING & LLM INITIALIZATION (LiteLLM Compatible Gateway)
@@ -18,17 +16,12 @@ from langchain_openai import ChatOpenAI
 os.environ["OPENAI_API_BASE"] = os.getenv("OPENAI_API_BASE", "http://localhost:4000")
 os.environ["OPENAI_API_KEY"] = os.getenv("LITELLM_MASTER_KEY", "sk-litellm-master-key")
 
-# Premium Model (Claude 3.5 Sonnet) via LiteLLM for high-complexity persona drafting & strategy
-premium_writer_llm = ChatOpenAI(
-    model_name="claude-3-5-sonnet",
-    temperature=0.3
-)
-
-# Cost-Optimized Model (DeepSeek Chat) via LiteLLM for editing and structural JSON output
-cheap_llm = ChatOpenAI(
-    model_name="deepseek-chat",
-    temperature=0.1
-)
+# We pass these custom model name strings directly to CrewAI.
+# Since CrewAI uses LiteLLM under the hood, and we have OPENAI_API_BASE 
+# redirected to localhost:4000, CrewAI will call LiteLLM on port 4000, 
+# which will then route them to Claude or DeepSeek perfectly!
+premium_writer_llm = "premium-writer-llm"
+cheap_llm = "cheap-llm"
 
 # ----------------------------------------------------------------------
 # 2. INPUT PAYLOAD EXTRACTION
@@ -48,20 +41,20 @@ try:
         {
             "partner_name": "AvantLink - Salomon Outdoor",
             "monetization_type": "affiliate",
-            "targeting_keywords": ["Mondo sizing", "DIN setting", ["Salomon", "ski boots"]],
-            "destination_url": "https://partner.avantlink.com/click?merchantId=123&websiteId=456&url=https://www.salomon.com"
+            "targeting_keywords": ["Mondo sizing", ["Salomon", "ski boots"]],
+            "destination_url": "https://partner.avantlink.com/click?merchantId=123"
         },
         {
             "partner_name": "REI Co-op - Ultralight Gear",
             "monetization_type": "affiliate",
             "targeting_keywords": ["seam failure", "Dyneema", "ripstop", "backpack"],
-            "destination_url": "https://rei.sjv.io/c/78910/f/backpacks?url=https://www.rei.com"
+            "destination_url": "https://rei.sjv.io/c/78910"
         },
         {
             "partner_name": "Premium Google AdSense - Mid Article PPC",
             "monetization_type": "ppc_ad_unit",
             "targeting_keywords": ["fabric denier", "torque specs", "hull geometry", "thermoregulation"],
-            "ad_code_html": "<div class=\"v4l-ad-container\"><!-- AdsByGoogle --><ins class=\"adsbygoogle\" style=\"display:block; text-align:center;\" data-ad-layout=\"in-article\" data-ad-format=\"fluid\" data-ad-client=\"ca-pub-999999999\" data-ad-slot=\"1111111\"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>"
+            "ad_code_html": '<div class="v4l-ad-container"><!-- AdsByGoogle --><ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-layout="in-article" data-ad-format="fluid" data-ad-client="ca-pub-999999999" data-ad-slot="1111111"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>'
         }
     ])
 except Exception as e:
@@ -74,31 +67,39 @@ except Exception as e:
 persona_bank = {
     "Sierra": {
         "role": "Sierra Marlowe - Fit & Sizing Standards Specialist",
-        "goal": "Write deeply technical, authoritative gear fitting guides from the perspective of an expert bench fitter.",
-        "backstory": """An obsessive, opinionated ski boot fitter and standards specialist. You reject broad marketing generalities 
-        and speak in technical specifics—discussing shell volumes, instep profiles, lasts, and physical tolerances. You write in a sharp, 
-        engaging, print-magazine-style editorial voice. You use industry jargon naturally (e.g., lasts, shell wraps, volume profiles) 
-        and maintain a bench-side, expert-to-skier tone."""
+        "goal": "Write highly engaging, elite-level technical copy about boots, lasts, volume, and shell tolerances.",
+        "backstory": """An obsessive, no-nonsense ski boot fitter and technical standards specialist. You despise marketing fluff,
+        dry summaries, and AI clichés. You speak in direct, visceral, active terms, using boot-bench jargon naturally 
+        (e.g., lasts, instep heights, sole length blocks, shell wraps). You write with the sharp, uncompromising tone of a 
+        veteran boot technician speaking directly to a seasoned, technical skier."""
     },
     "Dex": {
         "role": "Dex Okafor - Outdoor Technology & Equipment Engineer",
-        "goal": "Evaluate gear through specs, geometry, load ratings, and real-world durability.",
-        "backstory": "A backcountry engineer who strips marketing fluff down to functional measurements, structural design, and field reliability."
+        "goal": "Write elite-level, structurally sound technical copy evaluating gear tolerances, geometry, and design integrity.",
+        "backstory": """A backcountry design engineer who strips marketing jargon down to physical stress specs, shear strengths,
+        and real-world structural reliability. You write with the clean, precise authority of an industrial designer who 
+        knows exactly where joints shear, coatings flake, or materials warp under sub-zero friction."""
     },
     "Wren": {
         "role": "Wren Calloway - Trail Physiology & Environmental Specialist",
-        "goal": "Analyze physical performance, hydration, and altitude stress without giving false clinical certainty.",
-        "backstory": "An outdoor physiology researcher focused on human adaptations, environmental strain, and clear safety-boundary analysis."
+        "goal": "Draft high-authority physiological analyses of environmental strain without generic medical padding.",
+        "backstory": """An outdoor physiology expert who focuses on VO2 curves, core thermoregulation, and high-altitude adaptations.
+        You hate dry handwaving; you write with razor-sharp clinical logic, establishing distinct safety margins based 
+        strictly on physical data and environmental stress calculations."""
     },
     "Bo": {
         "role": "Bo Hartley - Materials & Gear Durability Analyst",
-        "goal": "Break down fabric construction, seam failures, tear strength, and field repairability.",
-        "backstory": "A used-gear inspector and materials expert who separates cosmetic wear from dangerous structural failure."
+        "goal": "Analyze fabric tear strength, seam engineering, and hardware durability with hyper-realistic engineering focus.",
+        "backstory": """A used-gear forensic analyst who knows exactly how fabric deniers hold up to scree slopes and sub-zero cycles.
+        You explain fabric construction (e.g., Dyneema grids, ripstop weaves, TPU laminates) with tactile detail, stripping away 
+        all catalog buzzwords in favor of real, physical breakdown metrics."""
     },
     "Niko": {
         "role": "Niko Reyes - Setup & Field Tuning Technician",
-        "goal": "Provide unambiguous mechanical setup instructions with distinct user vs technician boundaries.",
-        "backstory": "A certified outdoor gear mechanic dedicated to proper torque, setup alignment, and field maintenance protocols."
+        "goal": "Provide elite, unambiguous mechanical tuning and torque calibrations with strict technician boundaries.",
+        "backstory": """A master gear mechanic who lives and breathes grease threads, DIN springs, and exact torque specs.
+        You write with hyper-clear mechanical commands, telling readers exactly where to use a manual hex key versus 
+        when to walk into a certified shop to avoid critical hardware failures."""
     }
 }
 
@@ -115,10 +116,10 @@ contributor_agent = Agent(
 
 revenue_director = Agent(
     role="Advertising & Monetization Director",
-    goal="Maximize RPM and affiliate conversions by programmatically inserting contextual affiliate links and responsive pay-per-click (PPC) ad blocks.",
-    backstory="""A data-driven ad tech veteran who treats monetization as a core product feature. Believes that high-converting 
-    contextual affiliate links and non-intrusive PPC ad blocks should enhance the user journey without causing banner 
-    fatigue or degrading page speed. Strict defender of reader trust—link contextual relevance must be 100% accurate.""",
+    goal="Identify placement opportunities for high-intent contextual links and PPC ad blocks without corrupting copy flow.",
+    backstory="\"\"A data-driven digital monetization director who specializes in seamless ad integration. You treat layout \
+    space with high respect, identifying natural content transitions where responsive ad blocks can fit cleanly without \
+    disrupting the visual flow or degrading mobile screen real estate.\"\"\"",
     verbose=False,
     allow_delegation=False,
     llm=premium_writer_llm
@@ -126,86 +127,77 @@ revenue_director = Agent(
 
 managing_editor = Agent(
     role="Managing Editor & Fact Auditor",
-    goal="Enforce publication integrity, audit source claims, block AI clichés, and structure Ghost CMS JSON.",
-    backstory="""A ruthless digital editor who holds a zero-tolerance policy for passive voice, generic transitions, 
-    and AI-generated style structures. You demand sharp, magazine-style narrative subheaders and complete, uncompromised accuracy.""",
+    goal="Audit facts, strip away ALL AI-isms, eliminate repetitive intro/outro patterns, and enforce high-end magazine prose.",
+    backstory="\"\"A ruthless digital editor who despises AI phrasing, passive voice, and redundant structures. You edit the \
+    article to read like an elite tech feature from a premium print publication. You strip out all preambles, conversational \
+    introductions, and repetitive conclusion wraps, leaving only raw, highly-engaging tech authority.\"\"\"",
     verbose=False,
     allow_delegation=False,
-    llm=cheap_llm  # DeepSeek Chat is perfect for structured editing and structural JSON compilation!
+    llm=cheap_llm
 )
 
 # ----------------------------------------------------------------------
-# 4. TASK DEFINITIONS & CONSTRAINTS
+# 4. TASK DEFINITIONS & CONSTRAINTS (Sprint 5/6 Upgraded Copywriting Tasks)
 # ----------------------------------------------------------------------
 task_draft = Task(
     description=f"""
-    Write a technical decision guide on: '{target_topic}'.
+    Write an elite, highly detailed technical decision guide on: '{target_topic}'.
     
     EVIDENCE PACKAGE:
     {json.dumps(evidence_package, indent=2)}
     
-    CRITICAL EDITORIAL STYLE RULES:
-    1. NO CONVERSATIONAL FLUFF: Never start with introductory preambles (e.g., "In this guide, we'll dive into...", "Welcome to..."). Open immediately with a technical hook or a visceral bench-side fitting observation.
-    2. NARRATIVE HEADINGS ONLY: Generic headers like "Introduction", "Sizing Rules", "Technical Overview", "Analysis", or "Conclusion" are strictly forbidden. You must write custom, active, story-driven subheaders (e.g., "The ISO 9523 Friction Point", "Why Sizing Estimates Fail on the Bench", "Navigating Heel Pocket Pressure").
-    3. Direct, active voice: Write with short, punchy sentences. Make opinions clear and technical details absolute.
-    
-    PROHIBITED PHRASES & AI CLICHÉS:
-    - 'in today's landscape' or 'in today's world'
-    - 'delve' or 'delve deep'
-    - 'testament'
-    - 'furthermore'
-    - 'game-changer'
-    - 'revolutionize'
-    - 'a tapestry of'
-    - 'nestled'
-    - 'beacon of'
-    - Generic '10 Best' listicle formatting
+    RIGID EDITORIAL RULES (CRITICAL FOR QUALITY):
+    1. VOICE & TONE: Write from the perspective of {target_persona}. Use visceral, technical language.
+       - Sierra: Last widths, Mondo standards, shell volumes, WTR binding interfaces.
+       - Use active voice, varied sentence lengths (alternate brief 4-word sentences with longer compound analytical sentences).
+    2. NO AI FLUFF / META INTROS:
+       - DO NOT start with "In this guide...", "We will cover...", "This article is designed to..." or any variant.
+       - Jump immediately into the core physical problem or technical reality of the topic.
+    3. MAGAZINE HEADINGS ONLY:
+       - Absolutely PROHIBITED headings: "Introduction", "Body", "Technical Overview", "Sizing Rules", "Conclusion", "Summary".
+       - Instead, write custom, punchy, narrative headings (e.g., "The WTR Interface Paradox", "Manual Height Adjustments in the Field", "Sinking Heels and Instep Friction").
+    4. FACT DIRECTNESS:
+       - Embed the raw specs from the evidence package naturally as active metrics. 
+       - Label manufacturer claims as "unverified estimates" or "Salomon asserts..." if they are unproven.
+    5. NO CLICHÉS:
+       - Strictly enforce the prohibited list: 'in today's landscape', 'delve', 'testament', 'furthermore', 'game-changer', 'revolutionize', 'a tapestry of', 'nestled', 'beacon of'.
     """,
-    expected_output="Authoritative article drafted in clean Markdown with custom story-driven headings and zero AI-generated fluff.",
+    expected_output="A premium, print-ready editorial tech guide in clean Markdown, starting immediately with a sharp hook and featuring custom headings.",
     agent=contributor_agent
 )
 
 task_monetize = Task(
     description=f"""
-    Audit the drafted article and insert high-intent contextual affiliate links and responsive pay-per-click (PPC) ad units.
+    Identify placement zones in the drafted article to inject contextual affiliate links and responsive PPC ad slots.
     
     MONETIZATION INVENTORY RULES:
     {json.dumps(monetization_inventory, indent=2)}
     
-    INSTRUCTIONS & RIGID DENSITY BOUNDARIES:
-    1. Scan the text for exact-match or semantically close keywords specified in the inventory.
-    2. Convert those key phrases into Markdown affiliate links using the provided 'destination_url' template.
-       - Limit to a MAXIMUM of three (3) affiliate links per 500 words. Never link consecutive sentences.
-       - Ensure the anchor text is highly relevant (e.g. link 'Mondo sizing standards' instead of just 'sizing').
-    3. Place responsive PPC ad blocks inside the markdown where natural content breaks occur:
-       - Insert exactly one (1) PPC block (using 'ad_code_html' or placeholder comment if null) after the 2nd paragraph.
-       - If the article exceeds 800 words, insert a second (2nd) PPC block immediately preceding the final section or header.
-       - PPC ad block placeholder syntax to use if 'ad_code_html' is missing:
-         <!-- V4L PPC SLOT: partner_name -->
-    4. Do NOT alter the factual claims, spec numbers, or authoritative persona tone.
+    DENSITY & STRUCTURE COEXISTENCE:
+    1. Scan the text for keyword targets and turn them into natural-fitting markdown affiliate links.
+       - MAXIMUM of 3 affiliate links per 500 words. Never link consecutive sentences.
+    2. Add designated inline markers for PPC ad slots to ensure natural flow:
+       - Place the primary PPC marker [PRIMARY_PPC_SLOT] after the second paragraph.
+       - If word count is over 800 words, place a secondary PPC marker [SECONDARY_PPC_SLOT] immediately preceding the last subheader.
     """,
-    expected_output="The original draft enriched with highly targeted, context-appropriate affiliate links and responsive PPC code blocks.",
+    expected_output="The original draft annotated with contextual affiliate links and clear [PRIMARY_PPC_SLOT] / [SECONDARY_PPC_SLOT] position tags.",
     agent=revenue_director,
     dependencies=[task_draft]
 )
 
 task_editorial_audit = Task(
     description="""
-    Audit the monetized article against strict publishing standards:
-    1. Verify every metric and spec is supported by the evidence package.
-    2. Confirm no banned phrases, passive fluff, or generic headings exist.
-    3. Ensure persona voice aligns with their designated specialty.
-    4. Verify that monetization features (affiliate links, PPC containers) conform to density limits.
-    5. Compile the audited content into a single valid JSON object for the Ghost API. 
-    
-    CRITICAL: Output ONLY the raw JSON object. Do not wrap it in markdown code blocks. Do not write any conversational text before or after the JSON.
-    
-    The JSON structure MUST look exactly like this:
-    {
-      "meta_title": "Concise SEO Title (<60 chars)",
-      "meta_description": "Precise summary (<155 chars)",
-      "html_body": "Full article converted to clean HTML tags with tables, inline affiliate links, and embedded PPC containers."
-    }
+    Perform a ruthless editorial audit of the monetized draft:
+    1. FACT AUDIT: Cross-reference every metric and claim against the evidence package. Strip any claim not strictly supported.
+    2. COPY EDIT: Rewrite any passive, repetitive, or sterile sentences. Erase any conversational introductions ("In the world of ski gear...", "As a boot fitter..."). Make the prose jump straight onto the bench.
+    3. CLICHÉ SWEEP: Run an absolute block on banned AI words. Ensure headings are narrative, editorial, and engaging.
+    4. GHOST STRUCTURE: Convert the audited copy into clean HTML, preserving the [PRIMARY_PPC_SLOT] and [SECONDARY_PPC_SLOT] markers exactly as they are.
+    5. Output the result in this exact, rigid JSON block for the Ghost API:
+       {
+         "meta_title": "Concise, punchy SEO Title (<60 chars, no pipes/wraps)",
+         "meta_description": "Precise, narrative summary (<155 chars)",
+         "html_body": "Full article in clean HTML tags, with lists, inline affiliate links, and the [PRIMARY_PPC_SLOT] / [SECONDARY_PPC_SLOT] markers preserved."
+       }
     """,
     expected_output="A single valid JSON object with keys: meta_title, meta_description, html_body.",
     agent=managing_editor,
