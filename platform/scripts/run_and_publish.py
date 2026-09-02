@@ -65,12 +65,27 @@ def get_ghost_jwt(admin_key):
 
 def extract_json(text):
     """Robustly extracts a JSON block from stdout, ignoring any preambles or warnings."""
-    match = re.search(r'(\{.*\})', text, re.DOTALL)
+    match = re.search(r'(\\{.*\\})', text, re.DOTALL)
     if match:
         try:
             return json.loads(match.group(1))
         except json.JSONDecodeError:
             pass
+    
+    # Try finding any JSON block inside backticks
+    code_blocks = re.findall(r'```(?:json)?\\s*(\\{.*?\\})\\s*```', text, re.DOTALL)
+    for block in code_blocks:
+        try:
+            return json.loads(block)
+        except json.JSONDecodeError:
+            pass
+            
+    # Try parsing the whole text
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+        
     return None
 
 def monetize_html(html_content, inventory):
@@ -79,6 +94,10 @@ def monetize_html(html_content, inventory):
         return html_content
     
     soup = BeautifulSoup(html_content, 'html.parser')
+    
+    # Calculate word count
+    text_content = soup.get_text()
+    word_count = len(text_content.split())
     
     # 1. Inject affiliate links into text nodes safely
     for item in inventory:
@@ -120,14 +139,37 @@ def monetize_html(html_content, inventory):
                 if matched:
                     break
                              
-    # 2. Inject PPC blocks after the 2nd paragraph
+    # 2. Inject PPC blocks programmatically after 2nd paragraph, and at the end if >800 words
     paragraphs = soup.find_all('p')
-    if len(paragraphs) >= 2:
-        p2 = paragraphs[1]
-        ppc_item = next((x for x in inventory if x.get("monetization_type") == "ppc_ad_unit"), None)
-        if ppc_item and "ad_code_html" in ppc_item:
-            ad_soup = BeautifulSoup(ppc_item["ad_code_html"], 'html.parser')
+    ppc_item = next((x for x in inventory if x.get("monetization_type") == "ppc_ad_unit"), None)
+    
+    if ppc_item and "ad_code_html" in ppc_item:
+        ad_code = ppc_item["ad_code_html"]
+        
+        # Primary block after 2nd paragraph
+        if len(paragraphs) >= 2:
+            p2 = paragraphs[1]
+            ad_soup = BeautifulSoup(ad_code, 'html.parser')
             p2.insert_after(ad_soup)
+            
+        # Optional secondary block if text exceeds 800 words
+        if word_count > 800:
+            headers = soup.find_all(['h2', 'h3', 'h4'])
+            conclusion_header = None
+            for h in headers:
+                if 'conclusion' in h.get_text().lower() or 'final thoughts' in h.get_text().lower():
+                    conclusion_header = h
+                    break
+            
+            if not conclusion_header and headers:
+                conclusion_header = headers[-1]
+                
+            if conclusion_header:
+                ad_soup2 = BeautifulSoup(ad_code, 'html.parser')
+                conclusion_header.insert_before(ad_soup2)
+            elif len(paragraphs) >= 4:
+                ad_soup2 = BeautifulSoup(ad_code, 'html.parser')
+                paragraphs[-1].insert_before(ad_soup2)
             
     return str(soup)
 
@@ -156,14 +198,15 @@ def main():
     crew_script = os.path.expanduser('~/vital4living/platform/scripts/webzine-crew-v2.py')
     python_bin = os.path.expanduser('~/vital4living/venv/bin/python3')
     if not os.path.exists(python_bin):
-        python_bin = 'python3'
+        python_bin = 'venv/bin/python3'
+        if not os.path.exists(python_bin):
+            python_bin = 'python3'
 
     try:
         process = subprocess.Popen(
             [python_bin, crew_script, payload_str],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            stdin=subprocess.DEVNULL,
             text=True
         )
         stdout, stderr = process.communicate()
