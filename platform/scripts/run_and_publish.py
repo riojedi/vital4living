@@ -3,7 +3,8 @@
 Vital4Living - Autonomous Run & Publish Wrapper
 Runs the multi-agent CrewAI writing loop and immediately pushes the resulting
 article directly into your Ghost CMS admin panel as a draft in a single step!
-Includes robust programmatic HTML monetization injection for affiliate links and PPC units.
+Includes robust programmatic HTML monetization injection for affiliate links and PPC units
+fully wrapped inside Ghost CMS native Koenig HTML Cards to prevent element stripping.
 """
 
 import os
@@ -64,28 +65,41 @@ def get_ghost_jwt(admin_key):
     return jwt.encode(payload, secret_bytes, algorithm='HS256', headers=header)
 
 def extract_json(text):
-    """Robustly extracts a JSON block from stdout, ignoring any preambles or warnings."""
-    match = re.search(r'(\\{.*\\})', text, re.DOTALL)
-    if match:
-        try:
-            return json.loads(match.group(1))
-        except json.JSONDecodeError:
-            pass
+    """Robustly extracts a JSON block using brace counting to support nested structures."""
+    start_idx = text.find('{')
+    if start_idx == -1:
+        return None
     
-    # Try finding any JSON block inside backticks
-    code_blocks = re.findall(r'```(?:json)?\\s*(\\{.*?\\})\\s*```', text, re.DOTALL)
-    for block in code_blocks:
-        try:
-            return json.loads(block)
-        except json.JSONDecodeError:
-            pass
-            
-    # Try parsing the whole text
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        pass
+    brace_count = 0
+    in_string = False
+    escape = False
+    
+    for i in range(start_idx, len(text)):
+        char = text[i]
         
+        if escape:
+            escape = False
+            continue
+        
+        if char == '\\':
+            escape = True
+            continue
+            
+        if char == '"':
+            in_string = not in_string
+            continue
+            
+        if not in_string:
+            if char == '{':
+                brace_count += 1
+            elif char == '}':
+                brace_count -= 1
+                if brace_count == 0:
+                    json_str = text[start_idx:i+1]
+                    try:
+                        return json.loads(json_str)
+                    except json.JSONDecodeError:
+                        pass
     return None
 
 def monetize_html(html_content, inventory):
@@ -143,14 +157,18 @@ def monetize_html(html_content, inventory):
     paragraphs = soup.find_all('p')
     ppc_item = next((x for x in inventory if x.get("monetization_type") == "ppc_ad_unit"), None)
     
+    has_primary = False
+    has_secondary = False
+    
     if ppc_item and "ad_code_html" in ppc_item:
         ad_code = ppc_item["ad_code_html"]
         
         # Primary block after 2nd paragraph
         if len(paragraphs) >= 2:
             p2 = paragraphs[1]
-            ad_soup = BeautifulSoup(ad_code, 'html.parser')
-            p2.insert_after(ad_soup)
+            placeholder1 = soup.new_tag('div', attrs={'class': 'v4l-ppc-placeholder-primary'})
+            p2.insert_after(placeholder1)
+            has_primary = True
             
         # Optional secondary block if text exceeds 800 words
         if word_count > 800:
@@ -165,13 +183,47 @@ def monetize_html(html_content, inventory):
                 conclusion_header = headers[-1]
                 
             if conclusion_header:
-                ad_soup2 = BeautifulSoup(ad_code, 'html.parser')
-                conclusion_header.insert_before(ad_soup2)
+                placeholder2 = soup.new_tag('div', attrs={'class': 'v4l-ppc-placeholder-secondary'})
+                conclusion_header.insert_before(placeholder2)
+                has_secondary = True
             elif len(paragraphs) >= 4:
-                ad_soup2 = BeautifulSoup(ad_code, 'html.parser')
-                paragraphs[-1].insert_before(ad_soup2)
+                placeholder2 = soup.new_tag('div', attrs={'class': 'v4l-ppc-placeholder-secondary'})
+                paragraphs[-1].insert_before(placeholder2)
+                has_secondary = True
             
-    return str(soup)
+    final_html = str(soup)
+    
+    # Wrap ad containers in Koenig Comments to prevent Ghost from stripping the scripts!
+    ad_code_primary = f"""<!--kg-card-begin: html-->
+<div class="v4l-ad-container" style="background: #fcfcfc; border: 2px dashed #f59e0b; padding: 24px; text-align: center; margin: 28px 0; border-radius: 8px;">
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 700; color: #d97706; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; display: block;">
+        ⚠️ [MONETIZATION DEPLOYED] PPC Primary Ad Unit ({ppc_item.get('partner_name', 'Google AdSense') if ppc_item else 'AdSense'})
+    </div>
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: #6b7280; margin-bottom: 16px;">
+        This block renders as a responsive, in-article contextual display banner on live production.
+    </div>
+    {ppc_item.get('ad_code_html', '') if ppc_item else ''}
+</div>
+<!--kg-card-end: html-->"""
+
+    ad_code_secondary = f"""<!--kg-card-begin: html-->
+<div class="v4l-ad-container" style="background: #fcfcfc; border: 2px dashed #3b82f6; padding: 24px; text-align: center; margin: 28px 0; border-radius: 8px;">
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 700; color: #2563eb; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; display: block;">
+        ⚠️ [MONETIZATION DEPLOYED] PPC Secondary Ad Unit ({ppc_item.get('partner_name', 'Google AdSense') if ppc_item else 'AdSense'})
+    </div>
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: #6b7280; margin-bottom: 16px;">
+        This block renders as a responsive, end-of-article contextual display banner on live production.
+    </div>
+    {ppc_item.get('ad_code_html', '') if ppc_item else ''}
+</div>
+<!--kg-card-end: html-->"""
+
+    if has_primary:
+        final_html = final_html.replace('<div class="v4l-ppc-placeholder-primary"></div>', ad_code_primary)
+    if has_secondary:
+        final_html = final_html.replace('<div class="v4l-ppc-placeholder-secondary"></div>', ad_code_secondary)
+        
+    return final_html
 
 def main():
     if len(sys.argv) < 2:

@@ -3,6 +3,7 @@
 Vital4Living Multi-Agent CrewAI Writing, Editorial, and Monetization Engine
 Sprint 5/6 Expanded Implementation: Incorporating Advertising & Revenue Director Agent
 Version-agnostic string model definitions to prevent Pydantic validation errors.
+Optimized copywriting prompts to enforce strict editorial, magazine-style voice with narrative headers.
 """
 
 import os
@@ -16,10 +17,6 @@ from crewai import Agent, Task, Crew, Process
 os.environ["OPENAI_API_BASE"] = os.getenv("OPENAI_API_BASE", "http://localhost:4000")
 os.environ["OPENAI_API_KEY"] = os.getenv("LITELLM_MASTER_KEY", "sk-litellm-master-key")
 
-# We pass these custom model name strings directly to CrewAI.
-# Since CrewAI uses LiteLLM under the hood, and we have OPENAI_API_BASE 
-# redirected to localhost:4000, CrewAI will call LiteLLM on port 4000, 
-# which will then route them to Claude or DeepSeek perfectly!
 premium_writer_llm = "premium-writer-llm"
 cheap_llm = "cheap-llm"
 
@@ -67,8 +64,11 @@ except Exception as e:
 persona_bank = {
     "Sierra": {
         "role": "Sierra Marlowe - Fit & Sizing Standards Specialist",
-        "goal": "Turn sizing, standards, geometry, and manufacturer specs into actionable fit choices.",
-        "backstory": "An obsessive fit technician specializing in lasts, Mondo sizing, and volume profiles. Believes a size without a standard is pure marketing."
+        "goal": "Write deeply technical, authoritative gear fitting guides from the perspective of an expert bench fitter.",
+        "backstory": """An obsessive, opinionated ski boot fitter and standards specialist. You reject broad marketing generalities 
+        and speak in technical specifics—discussing shell volumes, instep profiles, lasts, and physical tolerances. You write in a sharp, 
+        engaging, print-magazine-style editorial voice. You use industry jargon naturally (e.g., lasts, shell wraps, volume profiles) 
+        and maintain a bench-side, expert-to-skier tone."""
     },
     "Dex": {
         "role": "Dex Okafor - Outdoor Technology & Equipment Engineer",
@@ -94,7 +94,6 @@ persona_bank = {
 
 active_persona = persona_bank.get(target_persona, persona_bank["Dex"])
 
-# Contributor Agent representing the dynamically loaded persona
 contributor_agent = Agent(
     role=active_persona["role"],
     goal=active_persona["goal"],
@@ -104,7 +103,6 @@ contributor_agent = Agent(
     llm=premium_writer_llm
 )
 
-# NEW: Advertising & Revenue Director Agent
 revenue_director = Agent(
     role="Advertising & Monetization Director",
     goal="Maximize RPM and affiliate conversions by programmatically inserting contextual affiliate links and responsive pay-per-click (PPC) ad blocks.",
@@ -116,11 +114,11 @@ revenue_director = Agent(
     llm=premium_writer_llm
 )
 
-# Managing Editor and Fact Auditor Agent
 managing_editor = Agent(
     role="Managing Editor & Fact Auditor",
     goal="Enforce publication integrity, audit source claims, block AI clichés, and structure Ghost CMS JSON.",
-    backstory="A strict digital publisher who rejects unsupported claims, buzzwords, and generic formatting.",
+    backstory="""A ruthless digital editor who holds a zero-tolerance policy for passive voice, generic transitions, 
+    and AI-generated style structures. You demand sharp, magazine-style narrative subheaders and complete, uncompromised accuracy.""",
     verbose=False,
     allow_delegation=False,
     llm=premium_writer_llm
@@ -136,17 +134,14 @@ task_draft = Task(
     EVIDENCE PACKAGE:
     {json.dumps(evidence_package, indent=2)}
     
-    REQUIREMENTS:
-    - Base every claim directly on the approved evidence package.
-    - Do not invent specifications or convert estimates into confirmed facts.
-    - Use Markdown tables where comparisons clarify technical differences.
-    - Reference primary sources for critical specs.
-    - Label manufacturer claims and estimates clearly.
-    - Include a 'Last Reviewed' timestamp.
+    CRITICAL EDITORIAL STYLE RULES:
+    1. NO CONVERSATIONAL FLUFF: Never start with introductory preambles (e.g., "In this guide, we'll dive into...", "Welcome to..."). Open immediately with a technical hook or a visceral bench-side fitting observation.
+    2. NARRATIVE HEADINGS ONLY: Generic headers like "Introduction", "Sizing Rules", "Technical Overview", "Analysis", or "Conclusion" are strictly forbidden. You must write custom, active, story-driven subheaders (e.g., "The ISO 9523 Friction Point", "Why Sizing Estimates Fail on the Bench", "Navigating Heel Pocket Pressure").
+    3. Direct, active voice: Write with short, punchy sentences. Make opinions clear and technical details absolute.
     
     PROHIBITED PHRASES & AI CLICHÉS:
-    - 'in today's landscape'
-    - 'delve'
+    - 'in today's landscape' or 'in today's world'
+    - 'delve' or 'delve deep'
     - 'testament'
     - 'furthermore'
     - 'game-changer'
@@ -156,11 +151,10 @@ task_draft = Task(
     - 'beacon of'
     - Generic '10 Best' listicle formatting
     """,
-    expected_output="Authoritative article drafted in clean Markdown with no AI-generated fluff.",
+    expected_output="Authoritative article drafted in clean Markdown with custom story-driven headings and zero AI-generated fluff.",
     agent=contributor_agent
 )
 
-# NEW: Contextual Monetization Task
 task_monetize = Task(
     description=f"""
     Audit the drafted article and insert high-intent contextual affiliate links and responsive pay-per-click (PPC) ad units.
@@ -175,7 +169,7 @@ task_monetize = Task(
        - Ensure the anchor text is highly relevant (e.g. link 'Mondo sizing standards' instead of just 'sizing').
     3. Place responsive PPC ad blocks inside the markdown where natural content breaks occur:
        - Insert exactly one (1) PPC block (using 'ad_code_html' or placeholder comment if null) after the 2nd paragraph.
-       - If the article exceeds 800 words, insert a second (2nd) PPC block immediately preceding the 'Conclusion' or final section.
+       - If the article exceeds 800 words, insert a second (2nd) PPC block immediately preceding the final section or header.
        - PPC ad block placeholder syntax to use if 'ad_code_html' is missing:
          <!-- V4L PPC SLOT: partner_name -->
     4. Do NOT alter the factual claims, spec numbers, or authoritative persona tone.
@@ -189,15 +183,19 @@ task_editorial_audit = Task(
     description="""
     Audit the monetized article against strict publishing standards:
     1. Verify every metric and spec is supported by the evidence package.
-    2. Confirm no banned phrases or generic transition fluff exist.
+    2. Confirm no banned phrases, passive fluff, or generic headings exist.
     3. Ensure persona voice aligns with their designated specialty.
-    4. Verify that monetization features (affiliate links, PPC containers) conform to density limits and do not corrupt formatting.
-    5. Compile the audited content into valid JSON for the Ghost API:
-       {
-         "meta_title": "Concise SEO Title (<60 chars)",
-         "meta_description": "Precise summary (<155 chars)",
-         "html_body": "Full article converted to clean HTML tags with tables, inline affiliate links, and embedded PPC containers."
-       }
+    4. Verify that monetization features (affiliate links, PPC containers) conform to density limits.
+    5. Compile the audited content into a single valid JSON object for the Ghost API. 
+    
+    CRITICAL: Output ONLY the raw JSON object. Do not wrap it in markdown code blocks. Do not write any conversational text before or after the JSON.
+    
+    The JSON structure MUST look exactly like this:
+    {
+      "meta_title": "Concise SEO Title (<60 chars)",
+      "meta_description": "Precise summary (<155 chars)",
+      "html_body": "Full article converted to clean HTML tags with tables, inline affiliate links, and embedded PPC containers."
+    }
     """,
     expected_output="A single valid JSON object with keys: meta_title, meta_description, html_body.",
     agent=managing_editor,
