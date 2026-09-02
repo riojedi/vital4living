@@ -1,28 +1,26 @@
 model_list:
   - model_name: cheap-llm
     litellm_params:
-      model: deepseek/deepseek-chat
-      api_key: "os.environ/DEEPSEEK_API_KEY"
-      api_base: "https://api.deepseek.com"
+      model: perplexity/sonar
+      api_key: "os.environ/PERPLEXITY_API_KEY"
       max_tokens: 8192
-      temperature: 0.1
 
   - model_name: live-research-llm
     litellm_params:
       model: perplexity/sonar-pro
       api_key: "os.environ/PERPLEXITY_API_KEY"
+      max_tokens: 4096
 
   - model_name: premium-writer-llm
     litellm_params:
-      model: anthropic/claude-3-5-sonnet-20241022
+      model: anthropic/claude-3-5-sonnet-latest
       api_key: "os.environ/ANTHROPIC_API_KEY"
       max_tokens: 4096
-      temperature: 0.3
 
   - model_name: fallback-writer-llm
     litellm_params:
-      model: deepseek/deepseek-chat
-      api_key: "os.environ/DEEPSEEK_API_KEY"
+      model: perplexity/sonar-pro
+      api_key: "os.environ/PERPLEXITY_API_KEY"
       max_tokens: 4096
 
 router_settings:
@@ -30,5 +28,5 @@ router_settings:
   num_retries: 3
   timeout: 60
   fallbacks:
-    - premium-writer-llm: ["cheap-llm"]
+    - premium-writer-llm: ["fallback-writer-llm"]
     - live-research-llm: ["cheap-llm"]
